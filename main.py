@@ -46,7 +46,7 @@ if not os.path.exists(PDF_DIR):
 
 @cl.cache
 def load_vectorstore():
-    print("Starting to load vector store...")
+    print("Starting to build vector store from PDFs...")
     loader = PyPDFDirectoryLoader(PDF_DIR)
     documents = loader.load()[:50]
     print(f"Loaded {len(documents)} documents.")
@@ -56,14 +56,19 @@ def load_vectorstore():
     embeddings = OpenAIEmbeddings(api_key=openai_api_key, base_url=openai_base_url, chunk_size=100)
     vectorstore = FAISS.from_documents(texts, embeddings)
     vectorstore.save_local("faiss_index")
-    print("Vector store loaded and saved successfully!")
+    print("✅ Vector store built and saved successfully!")
     return vectorstore
 
+embeddings = OpenAIEmbeddings(api_key=openai_api_key, base_url=openai_base_url)
+
 if os.path.exists("faiss_index"):
-    print("Loading existing vector store from faiss_index...")
-    embeddings = OpenAIEmbeddings(api_key=openai_api_key, base_url=openai_base_url)
-    vectorstore = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
-    print("Existing vector store loaded successfully!")
+    try:
+        print("📂 Loading existing vector store from faiss_index...")
+        vectorstore = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+        print("✅ Existing vector store loaded successfully!")
+    except Exception as e:
+        print(f"[WARN] Failed to load faiss_index ({e}). Rebuilding...")
+        vectorstore = load_vectorstore()
 else:
     vectorstore = load_vectorstore()
 
