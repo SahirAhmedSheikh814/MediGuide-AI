@@ -32,7 +32,7 @@ Deployed on **Railway.app** with a clean and responsive UI powered by **Chainlit
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/MediGuide-AI.git
+   git clone  https://github.com/SahirAhmedSheikh814/MediGuide-AI.git
    cd MediGuide-AI
 
 2. **Create virtual environment & activate**
